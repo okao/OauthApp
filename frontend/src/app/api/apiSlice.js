@@ -22,7 +22,11 @@ const baseQueryWithAuth = async (args, api, extraOptions) => {
     console.log("sending refresh token request");
 
     //send refresh token request to get new access token
-    const refreshTokenResult = await baseQuery("/refresh", api, extraOptions);
+    const refreshTokenResult = await baseQuery(
+      "/api/refresh",
+      api,
+      extraOptions
+    );
     console.log(refreshTokenResult);
 
     if (refreshTokenResult.data) {

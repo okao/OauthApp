@@ -6,15 +6,15 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Http\Request as Request;
 use Illuminate\Support\Facades\Hash;
+
 
 class AuthController extends Controller
 {
   // register a new user method
   public function register(RegisterRequest $request)
   {
-
     $data = $request->validated();
 
     $user = User::create([
@@ -52,6 +52,21 @@ class AuthController extends Controller
       $token,
       60 * 24
     ); // 1 day
+
+    return response()->json([
+      'user' => new UserResource($user),
+    ])->withCookie($cookie);
+  }
+
+  public function refresh(Request $request)
+  {
+    $user = $request->user();
+
+    $user->tokens()->delete();
+
+    $token = $user->createToken('auth_token')->plainTextToken;
+
+    $cookie = cookie('token', $token, 60 * 24); // 1 day
 
     return response()->json([
       'user' => new UserResource($user),
